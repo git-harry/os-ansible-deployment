@@ -61,28 +61,8 @@ function key_create(){
   ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ''
 }
 
-# Used to retry process that may fail due to random issues.
-function successerator() {
-  set +e
-  RETRY=0
-  # Set the initial return value to failure
-  false
-
-  while [ $? -ne 0 -a ${RETRY} -lt ${MAX_RETRIES} ];do
-    RETRY=$((${RETRY}+1))
-    $@
-  done
-
-  if [ ${RETRY} -eq ${MAX_RETRIES} ];then
-    echo "Hit maximum number of retries, giving up..."
-    exit 1
-  fi
-  set -e
-}
-
 function install_bits() {
-  successerator ansible-playbook -e @/etc/rpc_deploy/user_variables.yml \
-                                 playbooks/$@
+  ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/$@
 }
 
 function loopback_create() {
