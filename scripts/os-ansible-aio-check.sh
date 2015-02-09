@@ -62,7 +62,7 @@ function key_create(){
 }
 
 function install_bits() {
-  ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/$@
+  ansible-playbook -vvvv -e @/etc/rpc_deploy/user_variables.yml playbooks/$@
 }
 
 function loopback_create() {
