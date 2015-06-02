@@ -42,10 +42,17 @@
         container_config:
           - "lxc.aa_profile=unconfined"
           - "lxc.cgroup.devices.allow=a *:* rmw"
+          - "lxc.mount.entry = none dev devtmpfs defaults 0 0"
       delegate_to: "{{ physical_host }}"
       when: is_metal == false or is_metal == "False"
       tags:
         - cinder-container-setup
+      register: lxc_config
+    - name: udevadm trigger
+      command: udevadm trigger
+      tags:
+        - cinder-container-setup
+      when: lxc_config.changed
     - name: Flush net cache
       command: /usr/local/bin/lxc-system-manage flush-net-cache
       delegate_to: "{{ physical_host }}"
