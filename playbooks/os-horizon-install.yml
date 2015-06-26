@@ -56,6 +56,7 @@
       tags:
         - "horizon-rsyslog-client"
         - "rsyslog-client"
+    - role: "system_crontab_coordination"
   vars:
     horizon_galera_address: "{{ internal_lb_vip_address }}"
     ansible_hostname: "{{ container_name }}"

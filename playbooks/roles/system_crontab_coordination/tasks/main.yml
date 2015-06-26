@@ -1,0 +1,9 @@
+---
+# tasks file for system_crontab_coordination
+- name: Create crontab
+  template:
+    src: "crontab.j2"
+    dest: "/etc/crontab"
+    owner: "root"
+    group: "root"
+    mode: "0644"

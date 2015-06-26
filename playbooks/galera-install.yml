@@ -53,6 +53,7 @@
       tags:
         - "galera-rsyslog-client"
         - "rsyslog-client"
+    - role: "system_crontab_coordination"
   vars:
     galera_wsrep_node_name: "{{ container_name }}"
     ansible_hostname: "{{ container_name }}"

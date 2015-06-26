@@ -81,6 +81,7 @@
       tags:
         - "glance-rsyslog-client"
         - "rsyslog-client"
+    - role: "system_crontab_coordination"
   vars:
     glance_galera_address: "{{ internal_lb_vip_address }}"
     ansible_hostname: "{{ container_name }}"
