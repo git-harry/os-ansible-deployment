@@ -56,6 +56,8 @@
         galera_existing_cluster: true
       with_items: "{{ play_hosts }}"
       when: "{{ hostvars[item].mysql_running.rc == 0 }}"
+  vars:
+    galera_ignore_cluster_state: false
 
 - name: Install galera server
   hosts: galera_all
