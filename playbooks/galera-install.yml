@@ -18,13 +18,16 @@
   max_fail_percentage: 0
   tasks:
     - name: Check if mysql is running
-      command: service mysql status
+      command: /usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping
       ignore_errors: true
       register: mysql_running
 
     - fail:
-        msg: "The cluster may be broken, mysql is not running but is installed. Fix it before re-running the playbook."
-      when: mysql_running.rc == 3
+        msg: "The cluster may be broken, mysql is not running but appears to be installed. Fix it before re-running the playbook."
+      when:
+        - galera_ignore_cluster_state | bool
+        - mysql_running.rc == 1
+        - mysql_running.stderr | search("Check that mysqld is running and that the socket")
 
     - name: Gather mysql facts
       mysql_status_facts:
@@ -33,6 +36,7 @@
     - fail:
         msg: "The cluster may be broken, mysql is running but unable to gather mysql facts. Fix it before re-running the playbook."
       when:
+        - galera_ignore_cluster_state | bool
         - "{{ mysql_running.rc == 0 }}"
         - "{{ 'mysql_status' not in hostvars[inventory_hostname] }}"
 
@@ -40,6 +44,7 @@
         msg: "wsrep_incoming_addresses does not match across the cluster. Please fix before re-running the playbooks."
       with_items: "{{ play_hosts }}"
       when:
+        - galera_ignore_cluster_state | bool
         - "{{ mysql_running.rc == 0 }}"
         - "{{ hostvars[item]['mysql_running']['rc'] == 0 }}"
         - "{{ hostvars[inventory_hostname]['mysql_status']['wsrep_incoming_addresses'] != hostvars[item]['mysql_status']['wsrep_incoming_addresses'] }}"
