@@ -1,0 +1,33 @@
+---
+# Copyright 2015, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Update apt sources
+  apt:
+    update_cache: yes
+    cache_valid_time: 600
+  register: apt_update
+  until: apt_update|success
+  retries: 5
+  delay: 2
+  tags:
+    - rabbitmq-apt-packages
+
+- name: Check for new version of erlang
+  shell: apt-cache policy {{ rabbitmq_erlang_package }} | awk '/Installed|Candidate/ {print $2}' | egrep -v '^\(none\)$' | uniq | wc -l
+  register: erlang_package
+  failed_when: erlang_package.rc != 0 or erlang_package.stdout | int > 1
+  when: not rabbitmq_upgrade_major_minor | bool
+  tags:
+    - rabbitmq-apt-packages

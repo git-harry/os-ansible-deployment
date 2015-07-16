@@ -24,6 +24,8 @@
   tags:
     - rabbitmq-apt-packages
 
+- include: rabbitmq_check_erlang_version.yml
+
 - name: Install apt packages
   apt:
     pkg: "{{ item }}"
@@ -34,6 +36,27 @@
   delay: 2
   with_items: rabbitmq_apt_packages
   tags:
+    - rabbitmq-apt-packages
+
+- include: rabbitmq_check_rabbitmq_package_version.yml
+
+- name: Get version of downloaded RabbitMQ deb package
+  shell: dpkg -I "{{ rabbitmq_package_path }}" | awk '/Version:/ {print $2}'
+  register: deb_rabbitmq
+  when:
+    - not rabbitmq_upgrade_major_minor | bool
+  tags:
+    - rabbitmq-package-deb
+    - rabbitmq-apt-packages
+
+- name: Compare downloaded deb package version of RabbitMQ with version variables
+  fail:
+    msg: "The version downloaded should be selected based on the version variables. This task should never fail, if it has something has gone wrong."
+  when:
+    - not rabbitmq_upgrade_major_minor | bool
+    - not deb_rabbitmq.stdout | match('{{ rabbitmq_package_major_version }}\.{{ rabbitmq_package_minor_version }}\.{{ rabbitmq_package_patch_version }}')
+  tags:
+    - rabbitmq-package-deb
     - rabbitmq-apt-packages
 
 - name: Install the RabbitMQ package
@@ -54,3 +77,8 @@
   with_items: rabbitmq_pip_packages
   tags:
     - rabbitmq-pip-packages
+
+- name: Start rabbitmq
+  service:
+    name: rabbitmq-server
+    state: started
