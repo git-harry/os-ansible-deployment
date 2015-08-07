@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: RCBOPS
+  description: This role is a generic ini conf file generator.
+  company: Rackspace
+  license: Apache2
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - cloud
+  - openstack
+dependencies: []

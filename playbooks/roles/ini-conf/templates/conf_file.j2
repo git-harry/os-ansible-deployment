@@ -1,0 +1,34 @@
+{%- set _conf = {} %}
+{% set _prefix = [template_var_prefix, separator]|join('') %}
+{% set _global = {} %}
+{% for _key in hostvars[inventory_hostname] if _key.startswith(_prefix) %}
+{% set _ = _global.update({'key': _key, 'key_orig': _key}) %}
+{% for _sym_name, _symbol in symbol_mappings.iteritems() %}
+{% set _ = _global.update({'key': _global['key'] | replace(_sym_name, _symbol)}) %}
+{% endfor %}
+{% set _, _item = _global['key'].split(_prefix, 1) %}
+{% set _section, _option = _item.split(separator, 1) %}
+{% if _section not in _conf %}
+{% set _ = _conf.update({_section: {}}) %}
+{% endif %}
+{% set _ = _conf[_section].update({_option: _global['key_orig']}) %}
+{% endfor -%}
+
+{% raw %}
+{%- macro convert_value(value) %}
+{% if value is iterable and value == value | list %}
+{{ value | join(',') }}
+{% else %}
+{{ value }}
+{%- endif %}
+{% endmacro %}
+{% endraw -%}
+
+# {{ '{{' }} ansible_managed {{ '}}' }}
+{% for _section, _options in _conf.iteritems() %}
+
+[{{ _section }}]
+{% for _option, _value in _options.iteritems() %}
+{{ _option }} = {{ '{{' }} convert_value({{ _value }}) {{ '}}' }}
+{% endfor %}
+{% endfor %}
