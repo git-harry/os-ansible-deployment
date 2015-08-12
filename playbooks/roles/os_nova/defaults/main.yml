@@ -13,17 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Defines that the role will be deployed on a host machine
-is_metal: true
-
-# Enable/Disable ceilometer configurations
-nova_ceilometer_enabled: False
-
-## Verbosity Options
-debug: False
-verbose: True
-nova_fatal_deprecations: False
-
 ## System info
 nova_system_user_name: nova
 nova_system_group_name: nova
@@ -34,15 +23,6 @@ nova_system_home_folder: "/var/lib/{{ nova_system_user_name }}"
 ## DB
 nova_galera_user: nova
 nova_galera_database: nova
-nova_db_max_overflow: 10
-nova_db_max_pool_size: 120
-nova_db_pool_timeout: 30
-
-## RPC
-nova_rpc_backend: nova.openstack.common.rpc.impl_kombu
-nova_rpc_thread_pool_size: 64
-nova_rpc_conn_pool_size: 30
-nova_rpc_response_timeout: 60
 
 ## Nova virtualization Type, set to KVM if supported
 nova_virt_type: kvm
@@ -150,28 +130,14 @@ nova_ec2_service_internalurl: "{{ nova_ec2_service_internaluri }}/services/Cloud
 nova_ec2_program_name: nova-api-ec2
 nova_ec2_deprecated_but_enabled: false
 
-## Nova cinder
-nova_cross_az_attach: True
-
 ## Nova spice
-nova_spice_html5proxy_base_proto: http
-nova_spice_html5proxy_base_port: 6082
-nova_spice_html5proxy_base_uri: "{{ nova_spice_html5proxy_base_proto }}://{{ external_lb_vip_address}}:{{ nova_spice_html5proxy_base_port }}"
-nova_spice_html5proxy_base_url: "{{ nova_spice_html5proxy_base_uri }}/spice_auto.html"
-nova_spice_console_keymap: en-us
-nova_spice_console_agent_enabled: True
 nova_spice_program_name: nova-spicehtml5proxy
 
 ## Nova metadata
-nova_metadata_proxy_enabled: True
-nova_metadata_port: 8775
 nova_metadata_program_name: nova-api-metadata
 
 ## Nova cert
 nova_cert_program_name: nova-cert
-
-## Nova compute
-nova_enable_instance_password: True
 nova_compute_program_name: nova-compute
 # TODO: This defaults to 'False' upstream, we should set this to 'False' in Liberty
 nova_force_config_drive: True
@@ -185,88 +151,16 @@ nova_libvirt_inject_password: False
 
 ## Nova conductor
 nova_conductor_program_name: nova-conductor
-
-## Nova console
-nova_console_agent_enabled: True
 nova_consoleauth_program_name: nova-consoleauth
-nova_console_agent_enabled: True
-nova_console_keymap: en-us
 # Set the console type. Presently the only option is ["spice"].
 nova_console_type: spice
 
-## Nova global config
-nova_cpu_mode: host-model
-nova_linuxnet_interface_driver: nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
-nova_libvirt_vif_driver: nova.virt.libvirt.vif.NeutronLinuxBridgeVIFDriver
-nova_firewall_driver: nova.virt.firewall.NoopFirewallDriver
-nova_compute_driver: libvirt.LibvirtDriver
-nova_max_age: 0
-nova_remove_unused_resized_minimum_age_seconds: 3600
-nova_image_cache_manager_interval: 0
-nova_resume_guests_state_on_host_boot: False
-
-# Nova quota
-nova_quota_cores: 20
-nova_quota_fixed_ips: -1
-nova_quota_floating_ips: 10
-nova_quota_injected_file_content_bytes: 10240
-nova_quota_injected_file_path_length: 255
-nova_quota_injected_files: 5
-nova_quota_instances: 10
-nova_quota_key_pairs: 100
-nova_quota_metadata_items: 128
-nova_quota_networks: 3
-nova_quota_ram: 51200
-nova_quota_security_group_rules: 20
-nova_quota_security_groups: 10
-nova_quota_server_group_members: 10
-nova_quota_server_groups: 10
-
 # Nova Scheduler
-nova_cpu_allocation_ratio: 2.0
-nova_disk_allocation_ratio: 1.0
-nova_max_instances_per_host: 50
-nova_max_io_ops_per_host: 10
-nova_ram_allocation_ratio: 1.0
-nova_ram_weight_multiplier: 5.0
-nova_reserved_host_disk_mb: 2048
-nova_reserved_host_memory_mb: 2048
-nova_scheduler_driver_task_period: 60
-nova_scheduler_host_subset_size: 10
-nova_scheduler_max_attempts: 5
-nova_scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,AggregateCoreFilter,AggregateDiskFilter"
-nova_scheduler_driver: nova.scheduler.filter_scheduler.FilterScheduler
-nova_scheduler_available_filters: nova.scheduler.filters.all_filters
-nova_scheduler_host_manager: nova.scheduler.host_manager.HostManager
-nova_scheduler_manager: nova.scheduler.manager.SchedulerManager
-nova_scheduler_weight_classes: nova.scheduler.weights.all_weighers
 nova_scheduler_program_name: nova-scheduler
 
 # If you want to regenerate the nova users SSH keys, on each run, set this var to True
 # Otherwise keys will be generated on the first run and not regenerated each run.
 nova_recreate_keys: False
-# Nova Ceph rbd
-# Enble and define nova_libvirt_images_rbd_pool to use rbd as nova backend
-#nova_libvirt_images_rbd_pool: vms
-nova_ceph_client: '{{ cinder_ceph_client }}'
-nova_ceph_client_uuid: 517a4663-3927-44bc-9ea7-4a90e1cd4c66
-
-## General Neutron configuration
-# If ``nova_osapi_compute_workers`` is unset the system will use half the number of available VCPUS to
-# compute the number of api workers to use.
-# nova_osapi_compute_workers: 16
-
-# If ``nova_conductor_workers`` is unset the system will use half the number of available VCPUS to
-# compute the number of api workers to use.
-# nova_conductor_workers: 16
-
-# If ``nova_ec2_workers`` is unset the system will use half the number of available VCPUS to
-# compute the number of api workers to use.
-# nova_ec2_workers: 16
-
-# If ``nova_metadata_workers`` is unset the system will use half the number of available VCPUS to
-# compute the number of api workers to use.
-# nova_metadata_workers: 16
 
 
 ## Policy vars

@@ -32,19 +32,6 @@
     - nova-config
     - nova-post-install
 
-- name: Copy nova config
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ nova_system_user_name }}"
-    group: "{{ nova_system_group_name }}"
-  with_items:
-    - { src: "nova.conf.j2", dest: "/etc/nova/nova.conf" }
-  notify: Restart nova services
-  tags:
-    - nova-config
-    - nova-post-install
-
 - name: Apply updates to Policy file
   copy_updates:
     content="{{ item.content }}"

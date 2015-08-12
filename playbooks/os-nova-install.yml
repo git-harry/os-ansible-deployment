@@ -91,6 +91,15 @@
         - nova-logs
   roles:
     - { role: "os_nova", tags: [ "os-nova" ] }
+    - role: "ini-conf"
+      config_dest: "/etc/nova/nova.conf"
+      config_owner: "{{ nova_system_user_name }}"
+      config_group: "{{ nova_system_group_name }}"
+      config_notify: Restart nova services
+      template_var_prefix: nova_conf
+      tags:
+        - nova-config
+        - nova-post-install
     - role: "ceph_client"
       openstack_service_system_user: "{{ nova_system_user_name }}"
       tags:
@@ -106,6 +115,23 @@
     - role: "system_crontab_coordination"
       tags:
         - "system-crontab-coordination"
+  post_tasks:
+    - name: Perform a Nova DB sync
+      command: nova-manage db sync
+      sudo: yes
+      sudo_user: "{{ nova_system_user_name }}"
+      register: nova_db_sync
+      changed_when: nova_db_sync.stderr | search("migrate.versioning.api")
+      when: inventory_hostname == groups['nova_api_os_compute'][0]
+      tags:
+        - nova-db-setup
+        - nova-setup
+
+    - name: Restart Nova service when Nova DB sync modifies DB
+      set_fact:
+        nova_db_sync_change: "{{ hostvars[groups['nova_api_os_compute'][0]]['nova_db_sync']['changed'] }}"
+      changed_when: "{{ hostvars[groups['nova_api_os_compute'][0]]['nova_db_sync']['changed'] }}"
+      notify: Restart nova services
   vars:
     nova_galera_address: "{{ internal_lb_vip_address }}"
     ansible_hostname: "{{ container_name }}"

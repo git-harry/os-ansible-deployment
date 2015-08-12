@@ -1,0 +1,214 @@
+---
+_api_threads: "{{ ansible_processor_vcpus|default(2) // 2 }}"
+api_threads: "{{ _api_threads if _api_threads > 0 else 1 }}"
+debug: false
+nova_compute_driver: libvirt.LibvirtDriver
+nova_console_agent_enabled: true
+nova_console_keymap: en-us
+nova_cpu_allocation_ratio: 2.0
+nova_cpu_mode: host-model
+nova_cross_az_attach: true
+nova_dhcp_domain: novalocal
+nova_disk_allocation_ratio: 1.0
+nova_enabled_apis: osapi_compute,metadata
+nova_enable_instance_password: true
+nova_fatal_deprecations: false
+nova_firewall_driver: nova.virt.firewall.NoopFirewallDriver
+nova_image_cache_manager_interval: 0
+nova_keystone_auth_plugin: password
+nova_libvirt_hw_disk_discard: ignore
+nova_libvirt_vif_driver: nova.virt.libvirt.vif.NeutronLinuxBridgeVIFDriver
+nova_linuxnet_interface_driver: nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+nova_max_age: 0
+nova_max_instances_per_host: 50
+nova_max_io_ops_per_host: 10
+nova_metadata_port: 8775
+nova_metadata_proxy_enabled: true
+nova_quota_cores: 20
+nova_quota_fixed_ips: -1
+nova_quota_floating_ips: 10
+nova_quota_injected_file_content_bytes: 10240
+nova_quota_injected_file_path_length: 255
+nova_quota_injected_files: 5
+nova_quota_instances: 10
+nova_quota_key_pairs: 100
+nova_quota_metadata_items: 128
+nova_quota_networks: 3
+nova_quota_ram: 51200
+nova_quota_security_group_rules: 20
+nova_quota_security_groups: 10
+nova_quota_server_group_members: 10
+nova_quota_server_groups: 10
+nova_ram_allocation_ratio: 1.0
+nova_ram_weight_multiplier: 5.0
+nova_remove_unused_resized_minimum_age_seconds: 3600
+nova_reserved_host_disk_mb: 2048
+nova_reserved_host_memory_mb: 2048
+nova_rpc_backend: nova.openstack.common.rpc.impl_kombu
+nova_rpc_conn_pool_size: 30
+nova_rpc_response_timeout: 60
+nova_rpc_thread_pool_size: 64
+nova_scheduler_available_filters: nova.scheduler.filters.all_filters
+nova_scheduler_default_filters: RetryFilter,AvailabilityZoneFilter,RamFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,AggregateCoreFilter,AggregateDiskFilter
+nova_scheduler_driver: nova.scheduler.filter_scheduler.FilterScheduler
+nova_scheduler_driver_task_period: 60
+nova_scheduler_host_manager: nova.scheduler.host_manager.HostManager
+nova_scheduler_host_subset_size: 10
+nova_scheduler_manager: nova.scheduler.manager.SchedulerManager
+nova_scheduler_max_attempts: 5
+nova_scheduler_weight_classes: nova.scheduler.weights.all_weighers
+nova_service_user_domain_id: default
+nova_spice_html5proxy_base_port: 6082
+nova_spice_html5proxy_base_proto: http
+nova_spice_html5proxy_base_uri: "{{ nova_spice_html5proxy_base_proto }}://{{ external_lb_vip_address}}:{{ nova_spice_html5proxy_base_port }}"
+nova_spice_html5proxy_base_url: "{{ nova_spice_html5proxy_base_uri }}/spice_auto.html"
+verbose: true
+
+nova_conf__cinder__catalog_info: volume:cinder:internalURL
+nova_conf__cinder__cross_az_attach: "{{ nova_cross_az_attach }}"
+nova_conf__conductor__manager: nova.conductor.manager.ConductorManager
+nova_conf__conductor__topic: conductor
+nova_conf__conductor__use_local: false
+nova_conf__conductor__workers: "{{ nova_conductor_workers | default(api_threads) }}"
+nova_conf__DEFAULT__allow_resize_to_same_host: True
+nova_conf__DEFAULT__api_paste_config: /etc/nova/api-paste.ini
+nova_conf__DEFAULT__auth_strategy: keystone
+nova_conf__DEFAULT__compute_driver: "{{ nova_compute_driver }}"
+nova_conf__DEFAULT__cpu_allocation_ratio: "{{ nova_cpu_allocation_ratio }}"
+nova_conf__DEFAULT__debug: "{{ debug }}"
+nova_conf__DEFAULT__default_ephemeral_format: ext4
+nova_conf__DEFAULT__default_floating_pool: public
+nova_conf__DEFAULT__dhcp_domain: "{{ nova_dhcp_domain }}"
+nova_conf__DEFAULT__dhcpbridge_flagfile: /etc/nova/nova.conf
+nova_conf__DEFAULT__disk_allocation_ratio: "{{ nova_disk_allocation_ratio }}"
+nova_conf__DEFAULT__enabled_apis: "{{ nova_enabled_apis }}"
+nova_conf__DEFAULT__enable_instance_password: "{{ nova_enable_instance_password }}"
+nova_conf__DEFAULT__fatal_deprecations: "{{ nova_fatal_deprecations }}"
+nova_conf__DEFAULT__firewall_driver: "{{ nova_firewall_driver }}"
+nova_conf__DEFAULT__force_config_drive: always
+nova_conf__DEFAULT__force_dhcp_release: True
+nova_conf__DEFAULT__image_cache_manager_interval: "{{ nova_image_cache_manager_interval }}"
+nova_conf__DEFAULT__instance_name_template: instance-%08x
+nova_conf__DEFAULT__instances_path: "{{ nova_system_home_folder }}/instances"
+nova_conf__DEFAULT__instance_usage_audit_period: hour
+nova_conf__DEFAULT__instance_usage_audit: True
+nova_conf__DEFAULT__libvirt_vif_driver: "{{ nova_libvirt_vif_driver }}"
+nova_conf__DEFAULT__libvirt_vif_type: ethernet
+nova_conf__DEFAULT__linuxnet_interface_driver: "{{ nova_linuxnet_interface_driver }}"
+nova_conf__DEFAULT__log_dir: /var/log/nova
+nova_conf__DEFAULT__max_age: "{{ nova_max_age }}"
+nova_conf__DEFAULT__max_instances_per_host: "{{ nova_max_instances_per_host }}"
+nova_conf__DEFAULT__max_io_ops_per_host: "{{ nova_max_io_ops_per_host }}"
+nova_conf__DEFAULT__memcached_servers: "{{ memcached_servers }}"
+nova_conf__DEFAULT__metadata_host: "{{ internal_lb_vip_address }}"
+nova_conf__DEFAULT__metadata_port: "{{ nova_metadata_port }}"
+nova_conf__DEFAULT__metadata_workers: "{{ nova_metadata_workers | default(api_threads) }}"
+nova_conf__DEFAULT__my_ip: "{{ ansible_ssh_host }}"
+nova_conf__DEFAULT__network_api_class: nova.network.neutronv2.api.API
+nova_conf__DEFAULT__notification_driver: messagingv2
+nova_conf__DEFAULT__notify_on_state_change: vm_and_task_state
+nova_conf__DEFAULT__osapi_compute_workers: "{{ nova_osapi_compute_workers | default(api_threads) }}"
+nova_conf__DEFAULT__quota_cores: "{{ nova_quota_cores }}"
+nova_conf__DEFAULT__quota_fixed_ips: "{{ nova_quota_fixed_ips }}"
+nova_conf__DEFAULT__quota_floating_ips: "{{ nova_quota_floating_ips }}"
+nova_conf__DEFAULT__quota_injected_file_content_bytes: "{{ nova_quota_injected_file_content_bytes }}"
+nova_conf__DEFAULT__quota_injected_file_path_length: "{{ nova_quota_injected_file_path_length }}"
+nova_conf__DEFAULT__quota_injected_files: "{{ nova_quota_injected_files }}"
+nova_conf__DEFAULT__quota_instances: "{{ nova_quota_instances }}"
+nova_conf__DEFAULT__quota_key_pairs: "{{ nova_quota_key_pairs }}"
+nova_conf__DEFAULT__quota_metadata_items: "{{ nova_quota_metadata_items }}"
+nova_conf__DEFAULT__quota_networks: "{{ nova_quota_networks }}"
+nova_conf__DEFAULT__quota_ram: "{{ nova_quota_ram }}"
+nova_conf__DEFAULT__quota_security_group_rules: "{{ nova_quota_security_group_rules }}"
+nova_conf__DEFAULT__quota_security_groups: "{{ nova_quota_security_groups }}"
+nova_conf__DEFAULT__quota_server_group_members: "{{ nova_quota_server_group_members }}"
+nova_conf__DEFAULT__quota_server_groups: "{{ nova_quota_server_groups }}"
+nova_conf__DEFAULT__ram_allocation_ratio: "{{ nova_ram_allocation_ratio }}"
+nova_conf__DEFAULT__ram_weight_multiplier: "{{ nova_ram_weight_multiplier }}"
+nova_conf__DEFAULT__reserved_host_disk_mb: "{{ nova_reserved_host_disk_mb }}"
+nova_conf__DEFAULT__reserved_host_memory_mb: "{{ nova_reserved_host_memory_mb }}"
+nova_conf__DEFAULT__resume_guests_state_on_host_boot: False
+nova_conf__DEFAULT__rootwrap_config: /etc/nova/rootwrap.conf
+nova_conf__DEFAULT__rpc_backend: "{{ nova_rpc_backend }}"
+nova_conf__DEFAULT__rpc_conn_pool_size: "{{ nova_rpc_conn_pool_size }}"
+nova_conf__DEFAULT__rpc_response_timeout: "{{ nova_rpc_response_timeout }}"
+nova_conf__DEFAULT__rpc_thread_pool_size: "{{ nova_rpc_thread_pool_size }}"
+nova_conf__DEFAULT__scheduler_available_filters: "{{ nova_scheduler_available_filters }}"
+nova_conf__DEFAULT__scheduler_default_filters: "{{ nova_scheduler_default_filters }}"
+nova_conf__DEFAULT__scheduler_driver: "{{ nova_scheduler_driver }}"
+nova_conf__DEFAULT__scheduler_driver_task_period: "{{ nova_scheduler_driver_task_period }}"
+nova_conf__DEFAULT__scheduler_host_manager: "{{ nova_scheduler_host_manager }}"
+nova_conf__DEFAULT__scheduler_host_subset_size: "{{ nova_scheduler_host_subset_size }}"
+nova_conf__DEFAULT__scheduler_manager: "{{ nova_scheduler_manager }}"
+nova_conf__DEFAULT__scheduler_max_attempts: "{{ nova_scheduler_max_attempts }}"
+nova_conf__DEFAULT__scheduler_weight_classes: "{{ nova_scheduler_weight_classes }}"
+nova_conf__DEFAULT__security_group_api: neutron
+nova_conf__DEFAULT__service_down_time: 120
+nova_conf__DEFAULT__state_path: "{{ nova_system_home_folder }}"
+nova_conf__DEFAULT__verbose: "{{ verbose }}"
+nova_conf__DEFAULT__vif_plugging_is_fatal: False
+nova_conf__DEFAULT__vif_plugging_timeout: 10
+nova_conf__DEFAULT__vnc_enabled: False
+nova_conf__glance__host: "{{ glance_host }}"
+nova_conf__glance__port: "{{ glance_service_port }}"
+nova_conf__keystone_authtoken__auth_plugin: "{{ nova_keystone_auth_plugin }}"
+nova_conf__keystone_authtoken__auth_uri: "{{ keystone_service_internaluri }}"
+nova_conf__keystone_authtoken__auth_url: "{{ keystone_service_adminuri }}"
+nova_conf__keystone_authtoken__check_revocations_for_cached: False
+nova_conf__keystone_authtoken__insecure: "{{ keystone_service_internaluri_insecure | bool }}"
+nova_conf__keystone_authtoken__memcached_servers: "{{ memcached_servers }}"
+nova_conf__keystone_authtoken__memcache_secret_key: "{{ memcached_encryption_key }}"
+nova_conf__keystone_authtoken__memcache_security_strategy: ENCRYPT
+nova_conf__keystone_authtoken__password: "{{ nova_service_password }}"
+nova_conf__keystone_authtoken__project_domain_id: "{{ nova_service_project_domain_id }}"
+nova_conf__keystone_authtoken__project_name: "{{ nova_service_project_name }}"
+nova_conf__keystone_authtoken__revocation_cache_time: 60
+nova_conf__keystone_authtoken__signing_dir: "{{ nova_system_home_folder }}/cache/api"
+nova_conf__keystone_authtoken__token_cache_time: 300
+nova_conf__keystone_authtoken__user_domain_id: "{{ nova_service_user_domain_id }}"
+nova_conf__keystone_authtoken__username: "{{ nova_service_user_name }}"
+nova_conf__libvirt__cpu_mode: "{{ nova_cpu_mode }}"
+nova_conf__libvirt__hw_disk_discard: "{{ nova_libvirt_hw_disk_discard }}"
+nova_conf__libvirt__inject_key: false
+nova_conf__libvirt__inject_partition: -2
+nova_conf__libvirt__inject_password: false
+nova_conf__libvirt__remove_unused_resized_minimum_age_seconds: "{{ nova_remove_unused_resized_minimum_age_seconds }}"
+nova_conf__libvirt__use_usb_tablet: False
+nova_conf__libvirt__use_virtio_for_bridges: True
+nova_conf__libvirt__vif_driver: "{{ nova_libvirt_vif_driver }}"
+nova_conf__libvirt__virt_type: "{{ nova_virt_type }}"
+nova_conf__neutron__auth_plugin: password
+nova_conf__neutron__auth_strategy: keystone
+nova_conf__neutron__auth_url: "{{ keystone_service_adminurl }}"
+nova_conf__neutron__metadata_proxy_shared_secret: "{{ nova_metadata_proxy_secret }}"
+nova_conf__neutron__password: "{{ neutron_service_password }}"
+nova_conf__neutron__project_domain_name: '{{ neutron_service_domain_name |default("Default") }}'
+nova_conf__neutron__project_name: "{{ neutron_service_project_name }}"
+nova_conf__neutron__region_name: "{{ neutron_service_region }}"
+nova_conf__neutron__service_metadata_proxy: "{{ nova_metadata_proxy_enabled }}"
+nova_conf__neutron__url: "{{ neutron_service_adminurl }}"
+nova_conf__neutron__user_domain_name: '{{ neutron_service_domain_name |default("Default") }}'
+nova_conf__neutron__username: "{{ neutron_service_user_name }}"
+nova_conf__osapi_v3__enabled: false
+nova_conf__oslo_concurrency__lock_path: /var/lock/nova
+nova_conf__oslo_messaging_rabbit__amqp_auto_delete: False
+nova_conf__oslo_messaging_rabbit__rabbit_hosts: "{{ rabbitmq_servers }}"
+nova_conf__oslo_messaging_rabbit__rabbit_password: "{{ rabbitmq_password }}"
+nova_conf__oslo_messaging_rabbit__rabbit_port: "{{ rabbitmq_port }}"
+nova_conf__oslo_messaging_rabbit__rabbit_userid: "{{ rabbitmq_userid }}"
+nova_conf__spice__agent_enabled: "{{ nova_console_agent_enabled }}"
+nova_conf__spice__enabled: "{{ nova_console_agent_enabled }}"
+nova_conf__spice__html5proxy_base_url: "{{ nova_spice_html5proxy_base_url }}"
+nova_conf__spice__keymap: "{{ nova_console_keymap }}"
+nova_conf__spice__server_listen: "{{ ansible_ssh_host }}"
+nova_conf__spice__server_proxyclient_address: "{{ ansible_ssh_host }}"
+
+
+nova_db_max_overflow: 10
+nova_db_max_pool_size: 120
+nova_db_pool_timeout: 30
+
+nova_conf__database__connection: "mysql://{{ nova_galera_user }}:{{ nova_container_mysql_password }}@{{ nova_galera_address }}/{{ nova_galera_database }}?charset=utf8"
+nova_conf__database__max_overflow: "{{ nova_db_max_overflow }}"
+nova_conf__database__max_pool_size: "{{ nova_db_max_pool_size }}"
+nova_conf__database__pool_timeout: "{{ nova_db_pool_timeout }}"
