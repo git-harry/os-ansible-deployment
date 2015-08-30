@@ -1,0 +1,206 @@
+---
+# Copyright 2014, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Stop Nova API OS Compute (including S3 and EC2) Services
+  hosts: nova_api_os_compute
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_program_name }}"
+        state: stopped
+
+    - service:
+        name: "{{ nova_ec2_program_name }}"
+        state: stopped
+      when: nova_ec2_deprecated_but_enabled | bool
+
+    - service:
+        name: "{{ nova_s3_program_name }}"
+        state: stopped
+      when: nova_s3_deprecated_but_enabled | bool
+
+- name: Stop Nova API Metadata Service
+  hosts: nova_api_metadata
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_metadata_program_name }}"
+        state: stopped
+
+- name: Stop Nova Cert Service
+  hosts: nova_cert
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_cert_program_name }}"
+        state: stopped
+
+- name: Stop Nova Compute Service
+  hosts: nova_compute
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_compute_program_name }}"
+        state: stopped
+
+- name: Stop Nova Conductor Service
+  hosts: nova_conductor
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_conductor_program_name }}"
+        state: stopped
+
+- name: Stop Nova Scheduler Service
+  hosts: nova_scheduler
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_scheduler_program_name }}"
+        state: stopped
+
+- name: Stop Nova Console Service
+  hosts: nova_console
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_consoleauth_program_name }}"
+        state: stopped
+    - service:
+        name: "{{ nova_spice_program_name }}"
+        state: stopped
+      when: nova_console_type == "spice"
+
+- name: Synchronise Nova Database Schema
+  hosts: nova_conductor[0]
+  user: root
+  roles:
+    - galera_client
+    - os_nova_defaults
+  tasks:
+    - name: Create DB for service
+      mysql_db:
+        login_user: "{{ galera_root_user }}"
+        login_password: "{{ galera_root_password }}"
+        login_host: "{{ nova_galera_address }}"
+        name: "{{ nova_galera_database }}"
+        state: "present"
+
+    - name: Grant access to the DB for the service
+      mysql_user:
+        login_user: "{{ galera_root_user }}"
+        login_password: "{{ galera_root_password }}"
+        login_host: "{{ nova_galera_address }}"
+        name: "{{ nova_galera_user }}"
+        password: "{{ nova_container_mysql_password }}"
+        host: "{{ item }}"
+        state: "present"
+        priv: "{{ nova_galera_database }}.*:ALL"
+      with_items:
+        - "localhost"
+        - "%"
+
+    - name: Perform a Nova DB sync
+      command: nova-manage db sync
+      sudo: yes
+      sudo_user: "{{ nova_system_user_name }}"
+  vars:
+    nova_galera_address: "{{ internal_lb_vip_address }}"
+  tags:
+    - nova-db-sync
+
+- name: Start Nova API OS Compute (including S3 and EC2) Services
+  hosts: nova_api_os_compute
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_program_name }}"
+        state: started
+
+    - service:
+        name: "{{ nova_ec2_program_name }}"
+        state: started
+      when: nova_ec2_deprecated_but_enabled | bool
+
+    - service:
+        name: "{{ nova_s3_program_name }}"
+        state: started
+      when: nova_s3_deprecated_but_enabled | bool
+
+- name: Start Nova API Metadata Service
+  hosts: nova_api_metadata
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_metadata_program_name }}"
+        state: started
+
+- name: Start Nova Cert Service
+  hosts: nova_cert
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_cert_program_name }}"
+        state: started
+
+- name: Start Nova Compute Service
+  hosts: nova_compute
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_compute_program_name }}"
+        state: started
+
+- name: Start Nova Conductor Service
+  hosts: nova_conductor
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_conductor_program_name }}"
+        state: started
+
+- name: Start Nova Scheduler Service
+  hosts: nova_scheduler
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_scheduler_program_name }}"
+        state: started
+
+- name: Start Nova Console Service
+  hosts: nova_console
+  roles:
+    - os_nova_defaults
+  tasks:
+    - service:
+        name: "{{ nova_consoleauth_program_name }}"
+        state: started
+    - service:
+        name: "{{ nova_spice_program_name }}"
+        state: started
+      when: nova_console_type == "spice"

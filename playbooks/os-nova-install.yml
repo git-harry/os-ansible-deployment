@@ -15,3 +15,4 @@
 
 - include: os-nova-lxc-setup.yml
 - include: os-nova-service-setup.yml
+- include: os-nova-db-sync.yml

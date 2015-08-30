@@ -24,10 +24,6 @@
 - include: nova_post_install.yml
 - include: nova_upstart_init.yml
 
-- include: nova_db_setup.yml
-  when: >
-    inventory_hostname == groups['nova_api_os_compute'][0]
-
 - include: nova_service_setup.yml
   when: >
     inventory_hostname == groups['nova_api_os_compute'][0]
