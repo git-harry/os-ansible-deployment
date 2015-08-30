@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Installation and setup of Nova
-  hosts: nova_all
+- name: Installation and setup of Nova Compute
+  hosts: nova_compute
   max_fail_percentage: 20
   user: root
   pre_tasks:
