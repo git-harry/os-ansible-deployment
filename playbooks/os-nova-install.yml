@@ -16,3 +16,4 @@
 - include: os-nova-lxc-setup.yml
 - include: os-nova-service-setup.yml
 - include: os-nova-db-sync.yml
+- include: os-nova-keystone-services-setup.yml
