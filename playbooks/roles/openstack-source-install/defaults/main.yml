@@ -1,0 +1,14 @@
+---
+apt_packages: []
+pip_packages: []
+system_user_name: null
+system_group_name: null
+system_comment: null
+system_shell: null
+system_home_folder: null
+required_directories: []
+rootwrap_prefix: null
+config_files: []
+dynamic_config_files: []
+policy_files: []
+program_names: "{{ openstack_services }}"

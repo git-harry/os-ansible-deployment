@@ -1,0 +1,46 @@
+---
+# Copyright 2014, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Copy static config files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner|default(system_user_name) }}"
+    group: "{{ item.group|default(system_group_name) }}"
+  with_items: config_files
+  notify: Restart OpenStack service(s)
+
+- name: Create templated config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner|default(system_user_name) }}"
+    group: "{{ item.group|default(system_group_name) }}"
+  with_items: dynamic_config_files
+  notify: Restart OpenStack service(s)
+
+# config_template cannot find files relative to roles dir
+- name: Create policy file
+  config_template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner|default(system_user_name) }}"
+    group: "{{ item.group|default(system_group_name) }}"
+    mode: "item.mode|default(0644)"
+    config_overrides: "{{ item.config_overrides|default({}) }}"
+    config_type: "json"
+  with_items: policy_files
+  notify: Restart OpenStack service(s)
+  when: false
