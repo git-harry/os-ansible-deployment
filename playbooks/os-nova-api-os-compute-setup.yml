@@ -37,19 +37,17 @@
       tags:
         - nova-logs
         - nova-log-dirs
-    - name: Create log aggregation links
-      file:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-        state: "{{ item.state }}"
-        force: "yes"
-      with_items:
-        - { src: "/openstack/log/{{ inventory_hostname }}-nova", dest: "/var/log/nova", state: "link" }
-      when: is_metal == true or is_metal == "True"
-      tags:
-        - nova-logs
+    - name: Update nova_log_dir when is_metal
+      set_fact:
+        nova_log_dir:
+          path: "/var/log/nova"
+          state: 'link'
+          src: "/openstack/log/{{ inventory_hostname }}-nova"
+      when: is_metal | bool
   roles:
-    - { role: "os_nova", tags: [ "os-nova" ] }
+    - role: "os_nova"
+      openstack_services: "{{ [nova_program_name, nova_s3_deprecated_but_enabled | bool | ternary(nova_s3_program_name, None), nova_ec2_deprecated_but_enabled | bool | ternary(nova_ec2_program_name, None)] | difference([None]) }}"
+      tags: [ "os-nova" ]
     - { role: "openstack_openrc", tags: [ "openstack-openrc" ] }
     - role: "rsyslog_client"
       rsyslog_client_log_dir: "/var/log/nova"

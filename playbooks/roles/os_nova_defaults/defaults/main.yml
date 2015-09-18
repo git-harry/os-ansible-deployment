@@ -335,3 +335,31 @@ nova_pip_packages:
   - python-novaclient
   - keystonemiddleware
   - nova
+
+nova_log_dir_path: "/var/log/nova"
+nova_log_dir: { path: "{{ nova_log_dir_path }}" }
+nova_required_directories:
+  - { path: "/etc/nova" }
+  - { path: "/etc/nova/rootwrap.d" }
+  - { path: "/etc/sudoers.d", mode: "0750", owner: "root", group: "root" }
+  - { path: "/var/cache/nova" }
+  - { path: "{{ nova_system_home_folder }}" }
+  - { path: "{{ nova_system_home_folder }}/.ssh", mode: "0700" }
+  - { path: "{{ nova_system_home_folder }}/cache/api" }
+  - { path: "{{ nova_system_home_folder }}/instances" }
+  - { path: "/var/lock/nova" }
+  - { path: "/var/run/nova" }
+  - "{{ nova_log_dir }}"
+nova_config_files:
+  - { src: "roles/os_nova/files/rootwrap.conf", dest: "/etc/nova/rootwrap.conf" }
+  - { src: "roles/os_nova/files/rootwrap.d/api-metadata.filters", dest: "/etc/nova/rootwrap.d/api-metadata.filters" }
+  - { src: "roles/os_nova/files/rootwrap.d/baremetal-compute-ipmi.filters", dest: "/etc/nova/rootwrap.d/baremetal-compute-ipmi.filters" }
+  - { src: "roles/os_nova/files/rootwrap.d/baremetal-deploy-helper.filters", dest: "/etc/nova/rootwrap.d/baremetal-deploy-helper.filters" }
+  - { src: "roles/os_nova/files/rootwrap.d/compute.filters", dest: "/etc/nova/rootwrap.d/compute.filters" }
+  - { src: "roles/os_nova/files/rootwrap.d/network.filters", dest: "/etc/nova/rootwrap.d/network.filters" }
+  - { src: "roles/os_nova/files/api-paste.ini", dest: "/etc/nova/api-paste.ini" }
+nova_dynamic_config_files:
+  - { src: "roles/os_nova/templates/nova.conf.j2", dest: "/etc/nova/nova.conf" }
+nova_policy_files:
+  - { src: "roles/os_nova/files/policy.json", dest: "/etc/nova/policy.json", config_overrides: "{{ nova_policy_overrides }}" }
+nova_rootwrap_prefix: nova

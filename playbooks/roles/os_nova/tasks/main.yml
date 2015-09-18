@@ -13,20 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: nova_pre_install.yml
-- include: nova_install.yml
+- include: nova_messaging_setup.yml
+  when: >
+    inventory_hostname == groups['nova_all'][0]
 
 - include: nova_spice_console_install.yml
   when: >
     inventory_hostname in groups['nova_console'] and
     nova_console_type == "spice"
-
-- include: nova_post_install.yml
-- include: nova_upstart_init.yml
-
-- include: nova_service_setup.yml
-  when: >
-    inventory_hostname == groups['nova_api_os_compute'][0]
 
 - include: nova_compute.yml
   when: >

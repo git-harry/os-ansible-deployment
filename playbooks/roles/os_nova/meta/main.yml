@@ -35,3 +35,17 @@ dependencies:
   - galera_client
   - openstack_openrc
   - pip_lock_down
+  - role: openstack-source-install
+    system_group_name: "{{ nova_system_group_name }}"
+    system_user_name: "{{ nova_system_user_name }}"
+    system_comment: "{{ nova_system_comment }}"
+    system_shell: "{{ nova_system_shell }}"
+    system_home_folder: "{{ nova_system_home_folder }}"
+    required_directories: "{{ nova_required_directories }}"
+    apt_packages: "{{ nova_apt_packages }}"
+    pip_packages: "{{ nova_pip_packages }}"
+    config_files: "{{ nova_config_files }}"
+    dynamic_config_files: "{{ nova_dynamic_config_files }}"
+    policy_files: "{{ nova_policy_files }}"
+    log_dir: "{{ nova_log_dir_path }}"
+    rootwrap_prefix: "{{ nova_rootwrap_prefix }}"
