@@ -30,6 +30,7 @@ galaxy_info:
     - development
     - openstack
 dependencies:
+  - os_nova_defaults
   - apt_package_pinning
   - galera_client
   - openstack_openrc
