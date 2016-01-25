@@ -13,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Gather /etc/network/interfaces facts
+  interfaces:
+  tags:
+    - networking-interfaces-file
+
 - name: Ensure that /etc/network/interfaces.d/ exists
   file:
     path: /etc/network/interfaces.d/

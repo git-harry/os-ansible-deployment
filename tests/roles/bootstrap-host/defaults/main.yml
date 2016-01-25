@@ -102,3 +102,78 @@ bootstrap_host_mongodb_address: 172.29.236.100
 # By default the address will be set to the ipv4 address of the
 # host's network interface that has the default route on it.
 #bootstrap_host_public_address: 0.0.0.0
+
+# Network Interfaces configuration
+network_interfaces:
+  br-mgmt:
+    - address_family: inet
+      method: static
+      options:
+        bridge_stp: 'off'
+        bridge_waitport: 0
+        bridge_fd: 0
+        # Notice the bridge port is the vlan tagged interface
+        bridge_ports: "{{ bootstrap_host_bridge_mgmt_ports }}"
+        address: 172.29.236.100
+        netmask: 255.255.252.0
+        offload-sg: 'off'
+  br-vxlan:
+    - address_family: inet
+      method: static
+      options:
+        bridge_stp: 'off'
+        bridge_waitport: 0
+        bridge_fd: 0
+        bridge_ports: "{{ bootstrap_host_bridge_vxlan_ports }}"
+        address: 172.29.240.100
+        netmask: 255.255.252.0
+        offload-sg: 'off'
+        up:
+          # To ensure ssh checksum is correct
+          - '/sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill'
+          # To provide internet connectivity to instances
+          - '/sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE'
+        down:
+          - '/sbin/iptables -D POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill'
+          - '/sbin/iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE'
+  br-storage:
+    - address_family: inet
+      method: static
+      options:
+        bridge_stp: 'off'
+        bridge_waitport: 0
+        bridge_fd: 0
+        bridge_ports: "{{ bootstrap_host_bridge_storage_ports }}"
+        address: 172.29.244.100
+        netmask: 255.255.252.0
+        offload-sg: 'off'
+  br-vlan:
+    - address_family: inet
+      method: static
+      options:
+        bridge_stp: 'off'
+        bridge_waitport: 0
+        bridge_fd: 0
+        bridge_ports: br-vlan-veth
+        address: 172.29.248.100
+        netmask: 255.255.252.0
+        offload-sg: 'off'
+        pre-up:
+          # Create veth pair, don't bomb if already exists
+          - 'ip link add br-vlan-veth type veth peer name eth12 || true'
+          # Set both ends UP
+          - 'ip link set br-vlan-veth up'
+          - 'ip link set eth12 up'
+        post-down:
+          # Delete veth pair on DOWN
+          - 'ip link del br-vlan-veth || true'
+    # Add an additional address to br-vlan
+    # Flat network default gateway
+    # -- This needs to exist somewhere for network reachability
+    # -- from the router namespace for floating IP paths.
+    # -- Putting this here is primarily for tempest to work.
+    - address_family: inet
+      method: static
+      options:
+        address: 172.29.248.1
+        netmask: 255.255.252.0
