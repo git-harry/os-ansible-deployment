@@ -27,6 +27,7 @@
               --build {{ repo_build_dir }} \
               --log /var/log/repo/repo_builder.log \
               --requirement {{ repo_build_release_path }}/{{ repo_build_release_tag }}/requirements_global_requirements.txt
+  environment: "{{ repo_build_pip_env }}"
   tags:
     - repo-build-global-requirement-wheels
 
@@ -44,5 +45,6 @@
               --build {{ repo_build_dir }} \
               --log /var/log/repo/repo_builder.log \
               --requirement {{ repo_build_release_path }}/{{ repo_build_release_tag }}/requirements_local_filtered.txt
+  environment: "{{ repo_build_pip_env }}"
   tags:
     - repo-build-openstack-ansible-requirement-wheels

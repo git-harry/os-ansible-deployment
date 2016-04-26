@@ -50,3 +50,6 @@ repo_pip_packages:
   - virtualenv
   - virtualenv-tools
 
+# The is required to override the no_index value set in pip.conf
+repo_build_pip_env:
+  PIP_NO_INDEX: False

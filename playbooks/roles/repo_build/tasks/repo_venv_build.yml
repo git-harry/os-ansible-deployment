@@ -61,6 +61,7 @@
     virtualenv_site_packages: "no"
     virtualenv_command: "{{ repo_build_venv_command_options }}"
     extra_args: "{{ repo_build_venv_pip_install_options }}"
+  environment: "{{ repo_build_pip_env }}"
   register: install_packages
   until: install_packages|success
   retries: 5

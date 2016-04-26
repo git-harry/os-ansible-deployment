@@ -19,6 +19,7 @@
     name: "{{ item }}"
     state: present
     extra_args: "--constraint {{ repo_build_git_dir }}/requirements/upper-constraints.txt {{ pip_install_options|default('') }}"
+  environment: "{{ repo_build_pip_env }}"
   register: install_packages
   until: install_packages|success
   retries: 5
