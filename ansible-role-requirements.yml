@@ -102,7 +102,7 @@
 - name: rabbitmq_server
   scm: git
   src: https://github.com/git-harry/openstack-ansible-rabbitmq_server
-  version: usukdev/issues/517/master-2
+  version: ad9b2676c6a7422668a14faa690f56aca1fa70c1
 - name: repo_build
   scm: git
   src: https://git.openstack.org/openstack/openstack-ansible-repo_build
