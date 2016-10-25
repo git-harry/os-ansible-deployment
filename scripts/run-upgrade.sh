@@ -166,7 +166,7 @@ function main {
         # individually run each of the remaining plays from setup-infrastructure
         RUN_TASKS+=("haproxy-install.yml")
         RUN_TASKS+=("memcached-install.yml")
-        RUN_TASKS+=("rabbitmq-install.yml -e 'rabbitmq_upgrade=true'")
+        RUN_TASKS+=("rabbitmq-install.yml -vvv -e 'rabbitmq_upgrade=true'")
         RUN_TASKS+=("utility-install.yml")
         RUN_TASKS+=("rsyslog-install.yml")
         RUN_TASKS+=("${UPGRADE_PLAYBOOKS}/memcached-flush.yml")
