@@ -108,8 +108,8 @@
   version: 70e08119547e188b8db18cbd35246ed510b29d68
 - name: os_nova
   scm: git
-  src: https://git.openstack.org/openstack/openstack-ansible-os_nova
-  version: 312959bea6d4d577c6a4146ae81fa4044ac26d14
+  src: https://github.com/git-harry/openstack-ansible-os_nova
+  version: bug/1752540/stable/pike
 - name: os_octavia
   scm: git
   src: https://git.openstack.org/openstack/openstack-ansible-os_octavia
